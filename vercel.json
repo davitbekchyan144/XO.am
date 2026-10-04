@@ -1,3 +1,4 @@
 {
-  "framework": "nextjs"
+  "framework": "nextjs",
+  "buildCommand": "if [ \"$VERCEL_ENV\" = \"production\" ]; then npm run db:deploy; fi && npm run build"
 }

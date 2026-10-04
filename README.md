@@ -19,8 +19,6 @@ XO.am is a Next.js tic-tac-toe arena with PostgreSQL-backed accounts, match reco
 
 For a separately managed PostgreSQL server, set `DATABASE_URL` in `.env` to its connection string and skip Docker.
 
-Production deployments should run `npm run db:deploy` before starting the new application version.
-
 ## Vercel PostgreSQL
 
 Vercel's original Postgres product is discontinued. Create a database through a PostgreSQL provider in the Vercel Marketplace, such as Neon, and connect it to this Vercel project.
@@ -33,4 +31,4 @@ Configure these variables in the Vercel project for every environment that needs
 
 The provider may expose different variable names. Map its pooled and direct URLs to the names above; do not use `NEXT_PUBLIC_` for database credentials. After saving the variables, redeploy so the build and serverless functions receive them.
 
-Before deploying a schema change, run `npm run db:deploy` with both variables set to the production database. For local Docker development, the example `.env` uses the same local connection for both URLs.
+For Production deployments, Vercel runs `npm run db:deploy` automatically before `npm run build`. This applies committed Prisma migrations on pushes to the production branch. Preview builds skip migrations so they cannot alter a shared production database. Give Preview an isolated database branch before applying migrations there. For local Docker development, the example `.env` uses the same local connection for both URLs.
