@@ -2,9 +2,9 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "Start XO.am Server",
+			"label": "Start XO.am Next.js",
 			"type": "shell",
-			"command": "ruby server.rb",
+			"command": "npm run dev",
 			"isBackground": true,
 			"problemMatcher": []
 		}

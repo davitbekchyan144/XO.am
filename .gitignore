@@ -8,19 +8,19 @@
 .env.*
 !.env.example
 
-# Ruby artifacts
-/.bundle/
-/vendor/bundle/
+# Next.js and Node.js output
+/node_modules/
+/.next/
+/out/
 /coverage/
-/pkg/
-/.yardoc/
-/_yardoc/
-*.gem
-*.so
+/.turbo/
+*.tsbuildinfo
+next-env.d.ts
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
 
 # Local runtime output
 /tmp/
 *.log
-
-# Editor state
-.ruby-lsp/

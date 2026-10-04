@@ -1400,6 +1400,53 @@ a:focus-visible {
   justify-content: center;
 }
 
+.nav-logout {
+  color: var(--text-secondary);
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.nav-player-name {
+  color: var(--text-primary);
+  cursor: default;
+}
+
+.dashboard-record-link {
+  text-align: right;
+}
+
+.dashboard-record-link a {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.toggle-item select {
+  max-width: 150px;
+  padding: 8px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--card-bg-strong);
+  color: var(--text-primary);
+}
+
+.cell:disabled {
+  cursor: default;
+}
+
+.cell-o {
+  color: var(--accent);
+}
+
+.game-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.room-feedback {
+  color: var(--text-secondary);
+}
+
 :root[data-theme='light'] {
   --primary: #b94737;
   --primary-dark: #91392e;

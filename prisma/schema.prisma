@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String       @id @default(cuid())
+  displayName       String
+  displayNameKey    String       @unique
+  email             String       @unique
+  passwordHash      String
+  wins              Int          @default(0)
+  losses            Int          @default(0)
+  draws             Int          @default(0)
+  points            Int          @default(0)
+  darkMode          Boolean      @default(true)
+  soundEnabled      Boolean      @default(true)
+  animationsEnabled Boolean      @default(true)
+  notifications     Boolean      @default(true)
+  rememberDifficulty Boolean     @default(true)
+  autoRematch       Boolean      @default(false)
+  selectedDifficulty String      @default("medium")
+  selectedOpponent String        @default("David")
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  sessions          Session[]
+  matches           Match[]
+  hostedRooms       Room[]       @relation("RoomHost")
+  joinedRooms       Room[]       @relation("RoomGuest")
+  sentFriendships   Friendship[] @relation("FriendSender")
+  receivedFriendships Friendship[] @relation("FriendReceiver")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+}
+
+model Match {
+  id         String   @id @default(cuid())
+  playerId   String
+  opponent   String
+  result     String
+  mode       String
+  difficulty String?
+  createdAt  DateTime @default(now())
+  player     User     @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@index([playerId, createdAt])
+}
+
+model Room {
+  id            String   @id @default(cuid())
+  code          String   @unique
+  hostId        String
+  guestId       String?
+  board         String   @default("---------")
+  currentMark   String   @default("X")
+  status        String   @default("waiting")
+  winner        String?
+  revision      Int      @default(1)
+  round         Int      @default(1)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  host          User     @relation("RoomHost", fields: [hostId], references: [id], onDelete: Cascade)
+  guest         User?    @relation("RoomGuest", fields: [guestId], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+  @@index([hostId, status])
+}
+
+model Friendship {
+  id        String   @id @default(cuid())
+  userId    String
+  friendId  String
+  createdAt DateTime @default(now())
+  user      User     @relation("FriendSender", fields: [userId], references: [id], onDelete: Cascade)
+  friend    User     @relation("FriendReceiver", fields: [friendId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, friendId])
+  @@index([friendId])
+}
