@@ -1,0 +1,26 @@
+# macOS metadata
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+
+# Ruby artifacts
+/.bundle/
+/vendor/bundle/
+/coverage/
+/pkg/
+/.yardoc/
+/_yardoc/
+*.gem
+*.so
+
+# Local runtime output
+/tmp/
+*.log
+
+# Editor state
+.ruby-lsp/

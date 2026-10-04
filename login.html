@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>XO.am - Sign In</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Nav Bar -->
+    <nav class="nav-bar">
+      <a class="nav-logo" href="login.html">XO.am</a>
+      <div class="nav-links">
+        <span class="nav-link">Already in the arena?</span>
+        <a class="nav-link active" href="login.html">Sign in</a>
+        <a class="nav-link" href="signup.html">Create account</a>
+      </div>
+    </nav>
+
+    <main class="auth-layout">
+      <section class="auth-intro">
+        <span class="eyebrow">XO.am Arena</span>
+        <h1>Ready for your next match?</h1>
+        <p>Sign in to keep your profile, results, and game history in this browser, then jump into a quick AI match or a local room.</p>
+        <div class="auth-board" aria-hidden="true">
+          <span>X</span><span></span><span>O</span>
+          <span></span><span>X</span><span></span>
+          <span>O</span><span></span><span>X</span>
+        </div>
+      </section>
+      <div class="auth-card">
+        <div class="auth-mode-switch" role="tablist" aria-label="Authentication mode">
+          <a class="auth-mode-button active" href="login.html" aria-current="page">Sign in</a>
+          <a class="auth-mode-button" href="signup.html">Create account</a>
+        </div>
+        <div class="auth-card-heading">
+          <span class="panel-kicker">Player account</span>
+          <h2>Welcome back</h2>
+          <p>Sign in with your arena name or email.</p>
+        </div>
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="username">Username or email</label>
+            <input type="text" id="username" name="username" autocomplete="username" required placeholder="Enter your username or email">
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <div class="password-input-wrap">
+              <input type="password" id="password" name="password" autocomplete="current-password" required placeholder="Enter your password">
+              <button type="button" class="password-toggle" data-password-toggle aria-label="Show password" aria-pressed="false">Show</button>
+            </div>
+          </div>
+          <p class="auth-message" id="authMessage" role="alert" aria-live="polite"></p>
+          <button type="submit" class="btn-primary">Sign In</button>
+        </form>
+        <p class="auth-link">Don't have an account? <a href="signup.html">Create one</a></p>
+      </div>
+    </main>
+  </div>
+
+  <script src="auth.js"></script>
+</body>
+</html>

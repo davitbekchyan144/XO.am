@@ -1,0 +1,12 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Start XO.am Server",
+			"type": "shell",
+			"command": "ruby server.rb",
+			"isBackground": true,
+			"problemMatcher": []
+		}
+	]
+}

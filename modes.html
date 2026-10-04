@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>XO.am - Match</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Nav Bar -->
+    <nav class="nav-bar">
+      <div class="nav-logo">XO.am</div>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Arena</a>
+        <a href="records.html" class="nav-link">Records</a>
+        <a href="settings.html" class="nav-link">Settings</a>
+        <a href="login.html" class="nav-link" data-auth-logout>Logout</a>
+      </div>
+    </nav>
+
+    <!-- Main Match Content -->
+    <main class="match-container">
+      <!-- Match Banner -->
+      <div class="match-banner">
+        <h2><span id="matchOpponent">David</span></h2>
+        <p id="matchStatus">Preparing arena...</p>
+      </div>
+
+      <div class="room-code-panel" id="onlineRoomInvite" hidden>
+        <span>Room code</span>
+        <strong id="onlineRoomCode"></strong>
+        <button class="btn-secondary" type="button" id="copyRoomCodeButton">Copy code</button>
+      </div>
+
+      <!-- Score Boards -->
+      <div class="score-section">
+        <div class="score-box">
+          <div class="score-label">You</div>
+          <div class="score-value" id="playerScore">0</div>
+        </div>
+        <div class="versus">vs</div>
+        <div class="score-box">
+          <div class="score-label" id="aiLabel">David</div>
+          <div class="score-value" id="aiScore">0</div>
+        </div>
+      </div>
+
+      <!-- Difficulty Selector (inline) -->
+      <div class="difficulty-inline">
+        <label for="matchDifficulty">Difficulty:</label>
+        <select id="matchDifficulty">
+          <option value="easy">Easy</option>
+          <option value="medium" selected>Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+      </div>
+
+      <!-- Game Board -->
+      <div class="game-card">
+        <div class="board">
+          <div class="cell" data-index="0"></div>
+          <div class="cell" data-index="1"></div>
+          <div class="cell" data-index="2"></div>
+          <div class="cell" data-index="3"></div>
+          <div class="cell" data-index="4"></div>
+          <div class="cell" data-index="5"></div>
+          <div class="cell" data-index="6"></div>
+          <div class="cell" data-index="7"></div>
+          <div class="cell" data-index="8"></div>
+        </div>
+      </div>
+
+      <!-- Game Status -->
+      <div class="game-status">
+        <div id="winnerBanner" class="winner-banner" hidden>Winner</div>
+        <div id="gameStatus">Loading...</div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="game-actions">
+        <button class="btn-secondary" onclick="resetBoard()">New Round</button>
+        <button class="btn-secondary" onclick="goHome()">Back to Arena</button>
+      </div>
+    </main>
+  </div>
+
+  <script src="auth.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

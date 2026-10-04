@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>XO.am - AI Arena</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <nav class="nav-bar">
+      <div class="nav-logo">XO.am</div>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link active">Arena</a>
+        <a href="records.html" class="nav-link">Records</a>
+        <a href="settings.html" class="nav-link">Settings</a>
+        <a href="login.html" class="nav-link" data-auth-logout>Logout</a>
+      </div>
+    </nav>
+
+    <main class="main-content dashboard">
+      <section class="hero-panel">
+        <div class="hero-copy">
+          <span class="eyebrow">XO.am Arena</span>
+          <h1>Play a friend. Challenge the AI.</h1>
+          <p>Start a local room on your Wi‑Fi, sharpen your skills against a rival bot, or jump into a quick duel with someone beside you.</p>
+          <div class="hero-actions">
+            <a class="btn-primary" href="#liveArena">Play a friend</a>
+            <button class="btn-secondary" onclick="startMatch(document.getElementById('lobbyDifficulty').value)">Quick AI match</button>
+          </div>
+        </div>
+
+        <div class="hero-preview">
+          <div class="status-badge" id="arenaServerStatus">Checking local arena...</div>
+          <div class="preview-panel">
+            <div class="mini-avatar"></div>
+            <div class="preview-meta">
+              <span class="preview-label">Selected rival</span>
+              <h3 id="lobbyOpponentName">David</h3>
+              <span class="preview-rank" id="lobbyOpponentRank">Legendary rank</span>
+            </div>
+          </div>
+
+          <div class="hero-metrics">
+            <div class="metric-box">
+              <span>Match types</span>
+              <strong>AI + live</strong>
+            </div>
+            <div class="metric-box">
+              <span>Players per room</span>
+              <strong>2</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="overview-grid">
+        <div class="profile-panel">
+          <div class="panel-header">
+            <div>
+              <span class="panel-kicker">Player Profile</span>
+              <h2 id="playerName">Welcome, Player</h2>
+            </div>
+            <span class="profile-pill">This browser</span>
+          </div>
+
+          <div class="profile-stats">
+            <div class="stat-item">
+              <span class="stat-label">Wins</span>
+              <span class="stat-value" id="playerWins">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Points</span>
+              <span class="stat-value" id="playerPoints">0</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="challenge-panel">
+          <div class="difficulty-picker">
+            <label for="lobbyDifficulty">Choose Challenge:</label>
+            <select id="lobbyDifficulty">
+              <option value="easy">Easy</option>
+              <option value="medium" selected>Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </div>
+
+          <div class="opponent-panel">
+            <h3>Opponent</h3>
+            <div class="opponent-card">
+              <div class="opponent-avatar"></div>
+              <div class="opponent-name" id="lobbyOpponentNameSecondary">David</div>
+              <div class="opponent-rank" id="lobbyOpponentRankSecondary">Legendary rank</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="online-room-panel" id="liveArena">
+        <div class="online-room-heading">
+          <div>
+            <span class="panel-kicker">Same-Wi-Fi Multiplayer</span>
+            <h2>Live Arena</h2>
+          </div>
+          <span class="status-badge" id="roomServerStatus">Connecting...</span>
+        </div>
+        <p>Create a room and share the code with someone on the same Wi‑Fi network.</p>
+        <form class="player-search-form" id="playerSearchForm">
+          <label for="playerSearchInput">Find a player</label>
+          <input id="playerSearchInput" type="search" maxlength="24" autocomplete="off" placeholder="Search by arena name">
+          <button class="btn-secondary" type="submit">Search</button>
+        </form>
+        <div class="player-search-results" id="playerSearchResults" aria-live="polite"></div>
+        <section class="friends-section" aria-labelledby="friendsHeading">
+          <div class="friends-heading">
+            <h3 id="friendsHeading">Friends</h3>
+            <span id="friendCount">0 saved</span>
+          </div>
+          <div class="friend-list" id="friendList" aria-live="polite"></div>
+        </section>
+        <div class="online-room-controls">
+          <button class="btn-primary" type="button" id="createRoomButton">Create Room</button>
+          <div class="room-join-controls">
+            <label for="roomCodeInput">Room code</label>
+            <input id="roomCodeInput" type="text" maxlength="6" autocomplete="off" placeholder="ABC123">
+            <button class="btn-secondary" type="button" id="joinRoomButton">Join Room</button>
+          </div>
+        </div>
+        <p class="room-feedback" id="roomFeedback" role="status" aria-live="polite"></p>
+      </section>
+
+      <div class="mode-cards">
+        <div class="section-heading">
+          <h2>Arena Modes</h2>
+          <span>Choose your intensity</span>
+        </div>
+
+        <div class="cards-grid">
+          <div class="mode-card featured" onclick="startMatch('medium')">
+            <div class="card-icon">⚔️</div>
+            <h3>Quick Match</h3>
+            <p>Challenge a dynamic AI rival in a sharp, fast round.</p>
+            <button class="btn-primary">Play Now</button>
+          </div>
+
+          <div class="mode-card" onclick="startMatch('hard')">
+            <div class="card-icon">🔥</div>
+            <h3>Ranked Duel</h3>
+            <p>Face the toughest AI opponent when you need a real test.</p>
+            <button class="btn-primary">Play Now</button>
+          </div>
+
+          <div class="mode-card" onclick="startMatch('easy')">
+            <div class="card-icon">🌟</div>
+            <h3>Practice</h3>
+            <p>Build rhythm and confidence against a beginner-level bot.</p>
+            <button class="btn-primary">Play Now</button>
+          </div>
+
+          <div class="mode-card" onclick="startOfflineMatch()">
+            <div class="card-icon">🧑‍🤝‍🧑</div>
+            <h3>Offline Duel</h3>
+            <p>Play a local two-player match on the same device.</p>
+            <button class="btn-primary">Play Offline</button>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="opponent-roster">
+        <div class="section-heading">
+          <h2>Opponent Roster</h2>
+          <span>Select a rival</span>
+        </div>
+        <div class="roster-grid" id="opponentRoster"></div>
+      </div>
+    </main>
+  </div>
+
+  <script src="auth.js"></script>
+  <script>
+    const AI_ROSTER = [
+      { name: 'David', difficulty: 'medium' },
+      { name: 'Alex', difficulty: 'easy' },
+      { name: 'Mason', difficulty: 'medium' },
+      { name: 'Ryan', difficulty: 'hard' },
+      { name: 'Ethan', difficulty: 'easy' },
+      { name: 'Noah', difficulty: 'medium' },
+      { name: 'Lucas', difficulty: 'hard' },
+      { name: 'Daniel', difficulty: 'easy' },
+      { name: 'James', difficulty: 'medium' },
+      { name: 'Leo', difficulty: 'hard' },
+      { name: 'Kai', difficulty: 'easy' },
+      { name: 'Victor', difficulty: 'medium' },
+      { name: 'Nolan', difficulty: 'hard' },
+      { name: 'Aiden', difficulty: 'easy' },
+      { name: 'Theo', difficulty: 'hard' }
+    ];
+
+    function getDifficultyRank(difficulty) {
+      return { easy: 'Novice', medium: 'Legendary', hard: 'Master' }[difficulty] || 'Legendary';
+    }
+
+    function renderOpponentRoster() {
+      const roster = document.getElementById('opponentRoster');
+      if (!roster) return;
+
+      const selectedName = localStorage.getItem('currentAI') || AI_ROSTER[0].name;
+      roster.innerHTML = AI_ROSTER.map((opponent) => {
+        const isActive = opponent.name === selectedName ? 'active' : '';
+        return `
+          <button class="roster-card ${isActive}" type="button" data-name="${opponent.name}">
+            <span class="roster-avatar">${opponent.name.charAt(0)}</span>
+            <span class="roster-name">${opponent.name}</span>
+            <span class="roster-tier">${getDifficultyRank(opponent.difficulty)}</span>
+          </button>
+        `;
+      }).join('');
+
+      roster.querySelectorAll('.roster-card').forEach((card) => {
+        card.addEventListener('click', () => {
+          localStorage.setItem('currentAI', card.dataset.name);
+          updateLobbyOpponent();
+          renderOpponentRoster();
+        });
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const playerName = localStorage.getItem('username') || 'Player';
+      const lobbyDifficulty = document.getElementById('lobbyDifficulty');
+      const wins = localStorage.getItem('wins') || '0';
+      const points = localStorage.getItem('points') || '0';
+
+      document.getElementById('playerName').textContent = `Welcome, ${playerName}`;
+      document.getElementById('playerWins').textContent = wins;
+      document.getElementById('playerPoints').textContent = points;
+
+      if (!localStorage.getItem('currentAI')) {
+        localStorage.setItem('currentAI', AI_ROSTER[0].name);
+      }
+
+      renderOpponentRoster();
+      updateLobbyOpponent();
+      lobbyDifficulty?.addEventListener('change', updateLobbyOpponent);
+
+      const createButton = document.getElementById('createRoomButton');
+      const joinButton = document.getElementById('joinRoomButton');
+      if (!createButton || !joinButton) return;
+
+      const roomInput = document.getElementById('roomCodeInput');
+      const feedback = document.getElementById('roomFeedback');
+      const playerSearchForm = document.getElementById('playerSearchForm');
+      const playerSearchInput = document.getElementById('playerSearchInput');
+      const playerSearchResults = document.getElementById('playerSearchResults');
+      const friendList = document.getElementById('friendList');
+      const friendCount = document.getElementById('friendCount');
+      const statusBadge = document.getElementById('roomServerStatus');
+      const arenaStatus = document.getElementById('arenaServerStatus');
+      const friendStorageKey = `xoAmFriends:${encodeURIComponent(playerName.toLowerCase())}`;
+      let friends = [];
+      let onlinePlayers = [];
+      let refreshingOnlinePlayers = false;
+      let playerSearchTimer = null;
+      const lobbyState = {
+        lastSearchQuery: '',
+        lastSearchResults: []
+      };
+
+      try {
+        const savedFriends = JSON.parse(localStorage.getItem(friendStorageKey) || '[]');
+        friends = Array.isArray(savedFriends) ? savedFriends.filter(name => typeof name === 'string') : [];
+      } catch {
+        friends = [];
+      }
+
+      function saveFriends() {
+        localStorage.setItem(friendStorageKey, JSON.stringify(friends));
+        renderFriends();
+      }
+
+      function renderFriends() {
+        friendList.replaceChildren();
+        friendCount.textContent = `${friends.length} saved`;
+
+        if (friends.length === 0) {
+          friendList.textContent = 'Search for a player with an open room and add them here.';
+          return;
+        }
+
+        friends.forEach(friendName => {
+          const onlineFriend = onlinePlayers.find(player => player.displayName.toLowerCase() === friendName.toLowerCase());
+          const row = document.createElement('div');
+          row.className = 'friend-row';
+          const details = document.createElement('div');
+          const name = document.createElement('span');
+          name.className = 'player-search-name';
+          name.textContent = friendName;
+          const presence = document.createElement('span');
+          presence.className = `player-search-room${onlineFriend ? ' friend-online' : ''}`;
+          presence.textContent = onlineFriend ? 'Waiting in a room' : 'Offline';
+          details.append(name, presence);
+
+          const actions = document.createElement('div');
+          actions.className = 'friend-actions';
+          const join = document.createElement('button');
+          join.className = 'btn-secondary';
+          join.type = 'button';
+          join.textContent = 'Join';
+          join.disabled = !onlineFriend;
+          join.setAttribute('aria-label', `Join ${friendName}'s room`);
+          if (onlineFriend) join.addEventListener('click', () => enterRoom('join', onlineFriend.roomCode));
+
+          const remove = document.createElement('button');
+          remove.className = 'friend-remove';
+          remove.type = 'button';
+          remove.textContent = 'Remove';
+          remove.setAttribute('aria-label', `Remove ${friendName} from friends`);
+          remove.addEventListener('click', () => {
+            friends = friends.filter(name => name.toLowerCase() !== friendName.toLowerCase());
+            saveFriends();
+          });
+
+          actions.append(join, remove);
+          row.append(details, actions);
+          friendList.append(row);
+        });
+      }
+
+      async function refreshOnlinePlayers() {
+        if (refreshingOnlinePlayers) return;
+        refreshingOnlinePlayers = true;
+        try {
+          const params = new URLSearchParams({ exclude: playerName });
+          const response = await fetch(`/api/players?${params}`);
+          const data = await response.json();
+          if (response.ok) {
+            const nextPlayers = Array.isArray(data.players) ? data.players : [];
+            if (JSON.stringify(onlinePlayers) !== JSON.stringify(nextPlayers)) {
+              onlinePlayers = nextPlayers;
+              renderFriends();
+            }
+          }
+        } catch {
+          if (onlinePlayers.length) {
+            onlinePlayers = [];
+            renderFriends();
+          }
+        } finally {
+          refreshingOnlinePlayers = false;
+        }
+      }
+
+      async function performPlayerSearch(query) {
+        const trimmedQuery = query.trim();
+        if (!trimmedQuery) {
+          playerSearchResults.replaceChildren();
+          lobbyState.lastSearchQuery = '';
+          lobbyState.lastSearchResults = [];
+          return;
+        }
+
+        const normalizedQuery = trimmedQuery.toLowerCase();
+        if (lobbyState.lastSearchQuery === normalizedQuery && lobbyState.lastSearchResults.length) {
+          return;
+        }
+
+        lobbyState.lastSearchQuery = normalizedQuery;
+        playerSearchResults.replaceChildren();
+        playerSearchResults.textContent = 'Searching open rooms...';
+
+        try {
+          const params = new URLSearchParams({
+            q: trimmedQuery,
+            exclude: localStorage.getItem('username') || ''
+          });
+          const response = await fetch(`/api/players?${params}`);
+          const data = await response.json();
+          if (!response.ok) throw new Error(data.error || 'Could not search players.');
+
+          await refreshOnlinePlayers();
+          const players = Array.isArray(data.players) ? data.players : [];
+          lobbyState.lastSearchResults = players;
+          playerSearchResults.replaceChildren();
+          if (players.length === 0) {
+            playerSearchResults.textContent = trimmedQuery ? 'No waiting players match that name.' : 'No players are waiting in a room right now.';
+            return;
+          }
+
+          players.forEach(player => {
+            const row = document.createElement('div');
+            row.className = 'player-search-result';
+            const name = document.createElement('span');
+            name.className = 'player-search-name';
+            name.textContent = player.displayName;
+            const room = document.createElement('span');
+            room.className = 'player-search-room';
+            room.textContent = `Room ${player.roomCode} · Waiting`;
+            const details = document.createElement('div');
+            details.append(name, room);
+            const join = document.createElement('button');
+            join.className = 'btn-secondary';
+            join.type = 'button';
+            join.textContent = 'Join';
+            join.addEventListener('click', () => enterRoom('join', player.roomCode));
+            const addFriend = document.createElement('button');
+            addFriend.className = 'btn-secondary';
+            addFriend.type = 'button';
+            const alreadyFriend = friends.some(name => name.toLowerCase() === player.displayName.toLowerCase());
+            addFriend.textContent = alreadyFriend ? 'Added' : 'Add friend';
+            addFriend.disabled = alreadyFriend;
+            addFriend.addEventListener('click', () => {
+              if (friends.some(name => name.toLowerCase() === player.displayName.toLowerCase())) return;
+              friends.push(player.displayName);
+              saveFriends();
+              addFriend.textContent = 'Added';
+              addFriend.disabled = true;
+            });
+            const actions = document.createElement('div');
+            actions.className = 'friend-actions';
+            actions.append(join, addFriend);
+            row.append(details, actions);
+            playerSearchResults.append(row);
+          });
+        } catch {
+          playerSearchResults.textContent = 'Could not search players. Check the room server connection.';
+        }
+      }
+
+      renderFriends();
+      const friendRefreshTimer = window.setInterval(refreshOnlinePlayers, 10000);
+      window.addEventListener('pagehide', () => window.clearInterval(friendRefreshTimer), { once: true });
+
+      fetch('/api/health').then(response => response.json()).then(data => {
+        if (!data.online) throw new Error('Server unavailable');
+        statusBadge.textContent = 'Room server online';
+        arenaStatus.textContent = 'Local multiplayer ready';
+        refreshOnlinePlayers();
+      }).catch(() => {
+        statusBadge.textContent = 'Room server offline';
+        arenaStatus.textContent = 'AI matches ready';
+      });
+
+      async function enterRoom(action, code) {
+        createButton.disabled = true;
+        joinButton.disabled = true;
+        feedback.textContent = action === 'join' ? 'Joining room...' : 'Creating room...';
+        try {
+          const response = await fetch(action === 'create' ? '/api/rooms' : `/api/rooms/${code}/join`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ displayName: localStorage.getItem('username') || 'Player' })
+          });
+          const result = await response.json();
+          if (!response.ok) throw new Error(result.error || 'Could not enter that room.');
+
+          localStorage.setItem('gameMode', 'online');
+          sessionStorage.setItem('onlineRoomCode', result.roomCode);
+          sessionStorage.setItem('onlinePlayerId', result.playerId);
+          window.location.href = 'modes.html';
+        } catch (error) {
+          feedback.textContent = error.message;
+          createButton.disabled = false;
+          joinButton.disabled = false;
+        }
+      }
+
+      createButton.addEventListener('click', () => enterRoom('create'));
+      joinButton.addEventListener('click', () => {
+        const code = roomInput.value.trim().toUpperCase();
+        if (!/^[A-Z0-9]{6}$/.test(code)) {
+          feedback.textContent = 'Enter the six-character room code.';
+          return;
+        }
+        enterRoom('join', code);
+      });
+      roomInput.addEventListener('input', () => {
+        roomInput.value = roomInput.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+      });
+
+      playerSearchInput.addEventListener('input', () => {
+        const query = playerSearchInput.value.trim();
+        window.clearTimeout(playerSearchTimer);
+        if (!query) {
+          playerSearchResults.replaceChildren();
+          lobbyState.lastSearchQuery = '';
+          lobbyState.lastSearchResults = [];
+          return;
+        }
+        playerSearchTimer = window.setTimeout(() => performPlayerSearch(query), 200);
+      });
+
+      playerSearchForm.addEventListener('submit', event => {
+        event.preventDefault();
+        window.clearTimeout(playerSearchTimer);
+        performPlayerSearch(playerSearchInput.value);
+      });
+    });
+
+    function updateLobbyOpponent() {
+      const difficulty = document.getElementById('lobbyDifficulty').value;
+      localStorage.setItem('selectedDifficulty', difficulty);
+
+      const selectedName = localStorage.getItem('currentAI') || AI_ROSTER[0].name;
+      const opponentLabel = `Rank: ${getDifficultyRank(difficulty)}`;
+
+      document.getElementById('lobbyOpponentName').textContent = selectedName;
+      document.getElementById('lobbyOpponentRank').textContent = opponentLabel;
+      document.getElementById('lobbyOpponentNameSecondary').textContent = selectedName;
+      document.getElementById('lobbyOpponentRankSecondary').textContent = opponentLabel;
+    }
+
+    function startMatch(difficulty) {
+      localStorage.setItem('gameMode', 'ai');
+      localStorage.setItem('selectedDifficulty', difficulty);
+      localStorage.setItem('currentAI', localStorage.getItem('currentAI') || AI_ROSTER[0].name);
+      window.location.href = 'modes.html';
+    }
+
+    function startOfflineMatch() {
+      localStorage.setItem('gameMode', 'offline');
+      localStorage.setItem('selectedDifficulty', 'medium');
+      localStorage.setItem('currentAI', 'Player 2');
+      window.location.href = 'modes.html';
+    }
+  </script>
+</body>
+</html>
