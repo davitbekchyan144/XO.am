@@ -38,12 +38,22 @@ export function SiteHeader({ userName, darkMode }: SiteHeaderProps) {
         <Link className="nav-logo" href="/">XO.am</Link>
         <div className="nav-links">
           {links.map((link) => (
-            <Link className={`nav-link${pathname === link.href ? " active" : ""}`} href={link.href} key={link.href}>
+            <Link
+              className={`nav-link${pathname === link.href ? " active" : ""}`}
+              href={link.href}
+              key={link.href}
+            >
               {link.label}
             </Link>
           ))}
           <span className="nav-link nav-player-name">{userName}</span>
-          <button className="nav-link nav-logout" onClick={logout} type="button">Logout</button>
+          <button
+            className="nav-link nav-logout"
+            onClick={logout}
+            type="button"
+          >
+            Logout
+          </button>
         </div>
       </nav>
       <button

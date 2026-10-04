@@ -18,7 +18,12 @@ export async function GET(request: Request) {
     orderBy: { createdAt: "desc" },
     take: 30,
   });
-  return NextResponse.json({ players: rooms.map((room) => ({ displayName: room.host.displayName, roomCode: room.code })) });
+  return NextResponse.json({
+    players: rooms.map((room) => ({
+      displayName: room.host.displayName,
+      roomCode: room.code,
+    })),
+  });
 }
 
 export async function POST() {
@@ -34,5 +39,8 @@ export async function POST() {
     return NextResponse.json({ roomCode: room.code }, { status: 201 });
   }
 
-  return NextResponse.json({ error: "Could not create a room. Try again." }, { status: 503 });
+  return NextResponse.json(
+    { error: "Could not create a room. Try again." },
+    { status: 503 },
+  );
 }

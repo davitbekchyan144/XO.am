@@ -4,25 +4,41 @@ import { getCurrentUser } from "@/lib/auth";
 import { boardWinner } from "@/lib/game";
 import { prisma } from "@/lib/prisma";
 
-const moveSchema = z.object({ index: z.number().int().min(0).max(8) });
+const moveSchema = z.object({
+  index: z.number().int().min(0).max(8),
+});
+
+function getResult(winnerId: string | null, playerId: string, isDraw: boolean) {
+  if (isDraw) return "draw";
+  return winnerId === playerId ? "win" : "loss";
+}
 
 export async function POST(request: Request, context: { params: Promise<{ code: string }> }) {
   const user = await getCurrentUser();
-  if (!user) return NextResponse.json({ error: "Sign in required." }, { status: 401 });
+  if (!user) {
+    return NextResponse.json({ error: "Sign in required." }, { status: 401 });
+  }
 
   const parsed = moveSchema.safeParse(await request.json().catch(() => null));
-  if (!parsed.success) return NextResponse.json({ error: "Choose a valid square." }, { status: 400 });
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Choose a valid square." }, { status: 400 });
+  }
   const { code } = await context.params;
 
   try {
     const revision = await prisma.$transaction(async (transaction) => {
       const room = await transaction.room.findUnique({
         where: { code: code.toUpperCase() },
-        include: { host: { select: { displayName: true } }, guest: { select: { displayName: true } } },
+        include: {
+          host: { select: { displayName: true } },
+          guest: { select: { displayName: true } },
+        },
       });
       if (!room) throw new Error("ROOM_NOT_FOUND");
 
-      const mark = room.hostId === user.id ? "X" : room.guestId === user.id ? "O" : null;
+      const mark = room.hostId === user.id
+        ? "X"
+        : room.guestId === user.id ? "O" : null;
       if (!mark) throw new Error("NOT_A_PLAYER");
       if (room.status !== "playing") throw new Error("MATCH_NOT_PLAYING");
       if (room.currentMark !== mark) throw new Error("NOT_YOUR_TURN");
@@ -49,24 +65,40 @@ export async function POST(request: Request, context: { params: Promise<{ code: 
 
       if (status === "finished" && room.guestId) {
         const winnerId = winner === "X" ? room.hostId : winner === "O" ? room.guestId : null;
-        const hostResult = isDraw ? "draw" : winnerId === room.hostId ? "win" : "loss";
-        const guestResult = isDraw ? "draw" : winnerId === room.guestId ? "win" : "loss";
-        await transaction.match.createMany({ data: [
-          { playerId: room.hostId, opponent: room.guest?.displayName ?? "Opponent", result: hostResult, mode: "online" },
-          { playerId: room.guestId, opponent: room.host.displayName, result: guestResult, mode: "online" },
-        ] });
+        const hostResult = getResult(winnerId, room.hostId, isDraw);
+        const guestResult = getResult(winnerId, room.guestId, isDraw);
+        await transaction.match.createMany({
+          data: [
+            {
+              playerId: room.hostId,
+              opponent: room.guest?.displayName ?? "Opponent",
+              result: hostResult,
+              mode: "online",
+            },
+            {
+              playerId: room.guestId,
+              opponent: room.host.displayName,
+              result: guestResult,
+              mode: "online",
+            },
+          ],
+        });
         for (const [playerId, result] of [[room.hostId, hostResult], [room.guestId, guestResult]] as const) {
           await transaction.user.update({
             where: { id: playerId },
             data: result === "win"
               ? { wins: { increment: 1 }, points: { increment: 1 } }
-              : result === "loss" ? { losses: { increment: 1 } } : { draws: { increment: 1 } },
+              : result === "loss"
+                ? { losses: { increment: 1 } }
+                : { draws: { increment: 1 } },
           });
         }
       }
 
       return room.revision + 1;
-    }, { isolationLevel: "Serializable" });
+    }, {
+      isolationLevel: "Serializable",
+    });
 
     return NextResponse.json({ revision });
   } catch (error) {

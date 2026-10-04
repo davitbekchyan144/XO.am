@@ -32,7 +32,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ user }, { status: 201 });
   } catch (error) {
     if (error && typeof error === "object" && "code" in error && error.code === "P2002") {
-      return NextResponse.json({ error: "That email or display name is already registered." }, { status: 409 });
+      return NextResponse.json(
+        { error: "That email or display name is already registered." },
+        { status: 409 },
+      );
     }
     throw error;
   }
