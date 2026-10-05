@@ -49,6 +49,15 @@ const opponents = [
   { name: "Nolan", difficulty: "hard" },
   { name: "Aiden", difficulty: "easy" },
   { name: "Theo", difficulty: "hard" },
+  { name: "Ivy", difficulty: "easy" },
+  { name: "Orion", difficulty: "medium" },
+  { name: "Pixel", difficulty: "hard" },
+  { name: "Blaze", difficulty: "hard" },
+  { name: "Zara", difficulty: "medium" },
+  { name: "Atlas", difficulty: "hard" },
+  { name: "Echo", difficulty: "easy" },
+  { name: "Jett", difficulty: "medium" },
+  { name: "Skye", difficulty: "easy" },
 ];
 
 const rankNames: Record<string, string> = {
