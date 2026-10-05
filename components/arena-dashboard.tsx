@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
 
@@ -8,7 +9,6 @@ type ArenaUser = {
   displayName: string;
   wins: number;
   points: number;
-  darkMode: boolean;
   selectedDifficulty: string;
   selectedOpponent: string;
 };
@@ -22,6 +22,15 @@ type Friend = {
   id: string;
   displayName: string;
   roomCode: string | null;
+};
+
+type MatchMode = {
+  label: string;
+  mode: "ai" | "offline";
+  difficulty: string;
+  text: string;
+  image: string;
+  imageAlt: string;
 };
 
 const opponents = [
@@ -48,24 +57,38 @@ const rankNames: Record<string, string> = {
   hard: "Master",
 };
 
-const matchModes = [
+const matchModes: MatchMode[] = [
   {
     label: "Quick match",
+    mode: "ai",
     difficulty: "medium",
-    icon: "XO",
     text: "Challenge a dynamic AI rival in a sharp, fast round.",
+    image: "https://images.pexels.com/photos/28454507/pexels-photo-28454507.jpeg?auto=compress&cs=tinysrgb&w=900",
+    imageAlt: "Tic-tac-toe board on a dark surface",
   },
   {
     label: "Ranked duel",
+    mode: "ai",
     difficulty: "hard",
-    icon: "01",
     text: "Face the toughest rival when you need a real test.",
+    image: "https://images.pexels.com/photos/29422541/pexels-photo-29422541.jpeg?auto=compress&cs=tinysrgb&w=900",
+    imageAlt: "Modern glass tic-tac-toe board",
   },
   {
     label: "Practice",
+    mode: "ai",
     difficulty: "easy",
-    icon: "+1",
     text: "Build rhythm and confidence at your own pace.",
+    image: "https://images.pexels.com/photos/11986168/pexels-photo-11986168.jpeg?auto=compress&cs=tinysrgb&w=900",
+    imageAlt: "Colorful tic-tac-toe game outdoors",
+  },
+  {
+    label: "Offline duel",
+    mode: "offline",
+    difficulty: "medium",
+    text: "Play a local two-player match on the same device.",
+    image: "https://images.pexels.com/photos/8111352/pexels-photo-8111352.jpeg?auto=compress&cs=tinysrgb&w=900",
+    imageAlt: "Friends playing a board game together",
   },
 ];
 
@@ -80,25 +103,17 @@ export function ArenaDashboard({ user }: { user: ArenaUser }) {
   const [serverOnline, setServerOnline] = useState(false);
   const [busy, setBusy] = useState(false);
 
-  async function loadFriends() {
-    const response = await fetch("/api/friends");
-    if (response.ok) setFriends((await response.json()).friends);
-  }
-
-  async function searchRooms(search = query) {
-    const response = await fetch(`/api/rooms?q=${encodeURIComponent(search)}`);
-    if (response.ok) setRooms((await response.json()).players);
-  }
-
   useEffect(() => {
     let active = true;
-    async function refresh() {
+
+    async function refreshLobby() {
       try {
         const [roomResponse, friendResponse] = await Promise.all([
           fetch("/api/rooms"),
           fetch("/api/friends"),
         ]);
         if (!active) return;
+
         if (roomResponse.ok) {
           setRooms((await roomResponse.json()).players);
         }
@@ -110,15 +125,19 @@ export function ArenaDashboard({ user }: { user: ArenaUser }) {
         if (active) setServerOnline(false);
       }
     }
-    void refresh();
-    const timer = window.setInterval(refresh, 10000);
+
+    void refreshLobby();
+    const timer = window.setInterval(refreshLobby, 10000);
     return () => {
       active = false;
       window.clearInterval(timer);
     };
   }, []);
 
-  async function updatePreference(values: { selectedDifficulty?: string; selectedOpponent?: string }) {
+  async function updatePreference(values: {
+    selectedDifficulty?: string;
+    selectedOpponent?: string;
+  }) {
     await fetch("/api/settings", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -126,18 +145,30 @@ export function ArenaDashboard({ user }: { user: ArenaUser }) {
     });
   }
 
+  async function searchRooms(search = query) {
+    try {
+      const response = await fetch(`/api/rooms?q=${encodeURIComponent(search)}`);
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Could not search rooms.");
+      setRooms(result.players);
+    } catch (error) {
+      setFeedback(error instanceof Error ? error.message : "Could not search rooms.");
+    }
+  }
+
   async function enterRoom(action: "create" | "join", code?: string) {
     setBusy(true);
     setFeedback(action === "create" ? "Creating room..." : "Joining room...");
+
     try {
       const response = action === "create"
         ? await fetch("/api/rooms", { method: "POST" })
-        : await fetch(
-            `/api/rooms/${encodeURIComponent(code ?? "")}/join`,
-            { method: "POST" },
-          );
+        : await fetch(`/api/rooms/${encodeURIComponent(code ?? "")}/join`, {
+            method: "POST",
+          });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "Could not enter that room.");
+
       window.location.assign(
         `/match?mode=online&room=${encodeURIComponent(result.roomCode)}`,
       );
@@ -158,7 +189,11 @@ export function ArenaDashboard({ user }: { user: ArenaUser }) {
       setFeedback(result.error || "Could not add that friend.");
       return;
     }
-    await loadFriends();
+
+    const friendsResponse = await fetch("/api/friends");
+    if (friendsResponse.ok) {
+      setFriends((await friendsResponse.json()).friends);
+    }
   }
 
   async function removeFriend(friendId: string) {
@@ -171,17 +206,22 @@ export function ArenaDashboard({ user }: { user: ArenaUser }) {
     void searchRooms();
   }
 
-  function startMatch(
-    mode: "ai" | "offline",
-    selectedDifficulty = difficulty,
-  ) {
-    if (mode === "ai") void updatePreference({ selectedDifficulty });
+  function startMatch(mode: "ai" | "offline", selectedDifficulty = difficulty) {
+    if (mode === "ai") {
+      void updatePreference({ selectedDifficulty });
+    }
+
     const search = new URLSearchParams({
       mode,
       difficulty: selectedDifficulty,
       opponent,
     });
     window.location.assign(`/match?${search.toString()}`);
+  }
+
+  function selectOpponent(name: string) {
+    setOpponent(name);
+    void updatePreference({ selectedOpponent: name });
   }
 
   const rank = rankNames[difficulty] || rankNames.medium;
@@ -196,11 +236,19 @@ export function ArenaDashboard({ user }: { user: ArenaUser }) {
             <p>Choose a rival, test your tactics, or open a room for a live match.</p>
             <div className="hero-actions">
               <a className="btn-primary" href="#liveArena">Play a friend</a>
-              <button className="btn-secondary" onClick={() => startMatch("ai")} type="button">Quick AI match</button>
+              <button
+                className="btn-secondary"
+                type="button"
+                onClick={() => startMatch("ai")}
+              >
+                Quick AI match
+              </button>
             </div>
           </div>
           <div className="hero-preview">
-            <div className="status-badge">{serverOnline ? "Live rooms ready" : "AI arena ready"}</div>
+            <div className="status-badge">
+              {serverOnline ? "Live rooms ready" : "AI arena ready"}
+            </div>
             <div className="preview-panel">
               <div className="mini-avatar" aria-hidden="true" />
               <div className="preview-meta">
@@ -275,7 +323,9 @@ export function ArenaDashboard({ user }: { user: ArenaUser }) {
               <span className="panel-kicker">Live multiplayer</span>
               <h2>Open rooms</h2>
             </div>
-            <span className="status-badge">{serverOnline ? "Connected" : "Reconnecting"}</span>
+            <span className="status-badge">
+              {serverOnline ? "Connected" : "Reconnecting"}
+            </span>
           </div>
           <p>Create a room and share its code, or find a player who is waiting.</p>
           <form className="player-search-form" onSubmit={submitSearch}>
@@ -291,11 +341,14 @@ export function ArenaDashboard({ user }: { user: ArenaUser }) {
             <button className="btn-secondary" type="submit">Search</button>
           </form>
           <div className="player-search-results" aria-live="polite">
-            {rooms.length === 0 ? <p>No waiting players right now.</p> : rooms.map((player) => {
+            {rooms.length === 0 ? (
+              <p>No waiting players right now.</p>
+            ) : rooms.map((player) => {
               const normalizedName = player.displayName.toLowerCase();
-              const isFriend = friends.some(
+              const alreadyFriend = friends.some(
                 (friend) => friend.displayName.toLowerCase() === normalizedName,
               );
+
               return (
                 <div className="player-search-result" key={player.roomCode}>
                   <div>
@@ -308,24 +361,25 @@ export function ArenaDashboard({ user }: { user: ArenaUser }) {
                     <button
                       className="btn-secondary"
                       type="button"
-                      onClick={() => void enterRoom("join", player.roomCode)}
                       disabled={busy}
+                      onClick={() => void enterRoom("join", player.roomCode)}
                     >
                       Join
                     </button>
                     <button
                       className="btn-secondary"
                       type="button"
+                      disabled={alreadyFriend}
                       onClick={() => void addFriend(player.displayName)}
-                      disabled={isFriend}
                     >
-                      {isFriend ? "Added" : "Add friend"}
+                      {alreadyFriend ? "Added" : "Add friend"}
                     </button>
                   </div>
                 </div>
               );
             })}
           </div>
+
           <section className="friends-section" aria-labelledby="friendsHeading">
             <div className="friends-heading">
               <h3 id="friendsHeading">Friends</h3>
@@ -347,15 +401,17 @@ export function ArenaDashboard({ user }: { user: ArenaUser }) {
                       className="btn-secondary"
                       type="button"
                       disabled={!friend.roomCode || busy}
-                      onClick={() => friend.roomCode && void enterRoom("join", friend.roomCode)}
+                      onClick={() => {
+                        if (friend.roomCode) void enterRoom("join", friend.roomCode);
+                      }}
                     >
                       Join
                     </button>
                     <button
                       className="friend-remove"
                       type="button"
-                      onClick={() => void removeFriend(friend.id)}
                       aria-label={`Remove ${friend.displayName}`}
+                      onClick={() => void removeFriend(friend.id)}
                     >
                       Remove
                     </button>
@@ -364,12 +420,13 @@ export function ArenaDashboard({ user }: { user: ArenaUser }) {
               ))}
             </div>
           </section>
+
           <div className="online-room-controls">
             <button
               className="btn-primary"
               type="button"
-              onClick={() => void enterRoom("create")}
               disabled={busy}
+              onClick={() => void enterRoom("create")}
             >
               Create room
             </button>
@@ -388,8 +445,8 @@ export function ArenaDashboard({ user }: { user: ArenaUser }) {
               <button
                 className="btn-secondary"
                 type="button"
-                onClick={() => void enterRoom("join", roomCode)}
                 disabled={busy || roomCode.length !== 6}
+                onClick={() => void enterRoom("join", roomCode)}
               >
                 Join room
               </button>
@@ -407,31 +464,12 @@ export function ArenaDashboard({ user }: { user: ArenaUser }) {
           </div>
           <div className="cards-grid">
             {matchModes.map((mode) => (
-              <article className="mode-card" key={mode.label}>
-                <div className="card-icon">{mode.icon}</div>
-                <h3>{mode.label}</h3>
-                <p>{mode.text}</p>
-                <button
-                  className="btn-primary"
-                  type="button"
-                  onClick={() => startMatch("ai", mode.difficulty)}
-                >
-                  Play now
-                </button>
-              </article>
+              <ModeCard
+                key={mode.label}
+                mode={mode}
+                onPlay={() => startMatch(mode.mode, mode.difficulty)}
+              />
             ))}
-            <article className="mode-card">
-              <div className="card-icon">2P</div>
-              <h3>Offline duel</h3>
-              <p>Play a local two-player match on the same device.</p>
-              <button
-                className="btn-primary"
-                type="button"
-                onClick={() => startMatch("offline")}
-              >
-                Play offline
-              </button>
-            </article>
           </div>
         </section>
 
@@ -446,10 +484,7 @@ export function ArenaDashboard({ user }: { user: ArenaUser }) {
                 className={`roster-card${opponent === item.name ? " active" : ""}`}
                 key={item.name}
                 type="button"
-                onClick={() => {
-                  setOpponent(item.name);
-                  void updatePreference({ selectedOpponent: item.name });
-                }}
+                onClick={() => selectOpponent(item.name)}
               >
                 <span className="roster-avatar">{item.name[0]}</span>
                 <span className="roster-name">{item.name}</span>
@@ -458,10 +493,31 @@ export function ArenaDashboard({ user }: { user: ArenaUser }) {
             ))}
           </div>
         </section>
+
         <p className="dashboard-record-link">
           <Link href="/records">View all match records</Link>
         </p>
       </main>
     </div>
+  );
+}
+
+function ModeCard({ mode, onPlay }: { mode: MatchMode; onPlay: () => void }) {
+  return (
+    <article className="mode-card">
+      <div className="mode-card-image">
+        <Image
+          src={mode.image}
+          alt={mode.imageAlt}
+          fill
+          sizes="(max-width: 620px) 100vw, (max-width: 900px) 50vw, 25vw"
+        />
+      </div>
+      <h3>{mode.label}</h3>
+      <p>{mode.text}</p>
+      <button className="btn-primary" type="button" onClick={onPlay}>
+        {mode.mode === "offline" ? "Play offline" : "Play now"}
+      </button>
+    </article>
   );
 }
