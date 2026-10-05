@@ -121,12 +121,15 @@ a:focus-visible {
 }
 
 .nav-logo {
-  font-size: 1.75rem;
-  font-weight: 800;
-  letter-spacing: -0.08em;
-  color: var(--primary);
-  cursor: pointer;
-  text-shadow: 0 0 24px rgba(255, 114, 94, 0.28);
+  display: block;
+  flex: 0 0 auto;
+  width: min(190px, 36vw);
+  line-height: 0;
+}
+
+.nav-logo img {
+  width: 100%;
+  height: auto;
 }
 
 .nav-links {

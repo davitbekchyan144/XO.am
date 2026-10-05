@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { AuthForm } from "@/components/auth-form";
 
 type AuthPageProps = {
@@ -13,7 +14,15 @@ export function AuthPage({ mode, topLabel, title, description, boardMarks }: Aut
   return (
     <div className="container">
       <nav className="nav-bar">
-        <Link className="nav-logo" href="/">XO.am</Link>
+        <Link className="nav-logo" href="/" aria-label="XO.am home">
+          <Image
+            src="/xo-am-logo.svg"
+            alt="XO.am tic-tac-toe arena"
+            width={190}
+            height={68}
+            priority
+          />
+        </Link>
         <div className="nav-links">
           <span className="nav-link">{topLabel}</span>
         </div>

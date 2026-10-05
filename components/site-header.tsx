@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 
 type SiteHeaderProps = {
@@ -35,7 +36,15 @@ export function SiteHeader({ userName, darkMode }: SiteHeaderProps) {
   return (
     <>
       <nav className="nav-bar" aria-label="Main navigation">
-        <Link className="nav-logo" href="/">XO.am</Link>
+        <Link className="nav-logo" href="/" aria-label="XO.am home">
+          <Image
+            src="/xo-am-logo.svg"
+            alt="XO.am tic-tac-toe arena"
+            width={190}
+            height={68}
+            priority
+          />
+        </Link>
         <div className="nav-links">
           {links.map((link) => (
             <Link

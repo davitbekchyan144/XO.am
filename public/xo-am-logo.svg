@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 360" role="img" aria-labelledby="title">
+  <title id="title">XO.am, tic-tac-toe arena</title>
+  <g fill="none" stroke="#8c96aa" stroke-linecap="round" stroke-width="14">
+    <path d="M140 24v312M260 24v312M22 120h356M22 240h356" />
+  </g>
+  <g fill="none" stroke="#ff5b55" stroke-linecap="round" stroke-width="19">
+    <path d="m53 45 54 54m0-54L53 99m120 120 54 54m0-54-54 54m120 0 54 54m0-54-54 54" />
+  </g>
+  <g fill="none" stroke="#13b8aa" stroke-width="18">
+    <circle cx="200" cy="72" r="30" />
+    <circle cx="320" cy="192" r="30" />
+    <circle cx="80" cy="312" r="30" />
+  </g>
+  <g font-family="Arial, Helvetica, sans-serif" font-size="176" font-weight="700">
+    <text x="446" y="226" fill="#f1f0ee">XO</text>
+    <text x="685" y="226" fill="#ff5b55">.</text>
+    <text x="735" y="226" fill="#13b8aa">am</text>
+  </g>
+  <text x="452" y="312" fill="#c9c8c2" font-family="Arial, Helvetica, sans-serif" font-size="38" letter-spacing="6">Tic-tac-toe arena</text>
+</svg>
