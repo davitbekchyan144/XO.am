@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth";
+import { matchPointChange } from "@/lib/game";
 import { prisma } from "@/lib/prisma";
 
 const matchSchema = z.object({
@@ -23,8 +24,16 @@ export async function POST(request: Request) {
     prisma.user.update({
       where: { id: user.id },
       data: result === "win"
-        ? { wins: { increment: 1 }, points: { increment: 1 } }
-        : result === "loss" ? { losses: { increment: 1 } } : { draws: { increment: 1 } },
+        ? {
+            wins: { increment: 1 },
+            points: { increment: matchPointChange(result, mode, difficulty) },
+          }
+        : result === "loss"
+          ? {
+              losses: { increment: 1 },
+              points: { increment: matchPointChange(result, mode, difficulty) },
+            }
+          : { draws: { increment: 1 } },
     }),
   ]);
   return NextResponse.json({ ok: true }, { status: 201 });

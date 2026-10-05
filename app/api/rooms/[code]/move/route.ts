@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth";
-import { boardWinner } from "@/lib/game";
+import { boardWinner, matchPointChange } from "@/lib/game";
 import { prisma } from "@/lib/prisma";
 
 const moveSchema = z.object({
@@ -87,9 +87,15 @@ export async function POST(request: Request, context: { params: Promise<{ code: 
           await transaction.user.update({
             where: { id: playerId },
             data: result === "win"
-              ? { wins: { increment: 1 }, points: { increment: 1 } }
+              ? {
+                  wins: { increment: 1 },
+                  points: { increment: matchPointChange(result, "online") },
+                }
               : result === "loss"
-                ? { losses: { increment: 1 } }
+                ? {
+                    losses: { increment: 1 },
+                    points: { increment: matchPointChange(result, "online") },
+                  }
                 : { draws: { increment: 1 } },
           });
         }
