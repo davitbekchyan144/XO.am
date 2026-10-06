@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
-import { opponents, rankNames } from "@/lib/opponents";
+import { rankNames } from "@/lib/opponents";
 
 type ArenaUser = {
   id: string;
@@ -210,11 +210,6 @@ export function ArenaDashboard({ user }: { user: ArenaUser }) {
       mode: mode.label,
     });
     window.location.assign(`/bots?${search.toString()}`);
-  }
-
-  function selectOpponent(name: string) {
-    setOpponent(name);
-    void updatePreference({ selectedOpponent: name });
   }
 
   const rank = rankNames[difficulty] || rankNames.medium;
@@ -462,27 +457,6 @@ export function ArenaDashboard({ user }: { user: ArenaUser }) {
                 mode={mode}
                 onPlay={() => chooseMatchMode(mode)}
               />
-            ))}
-          </div>
-        </section>
-
-        <section className="opponent-roster">
-          <div className="section-heading">
-            <h2>Opponent roster</h2>
-            <span>Choose a rival for your next match</span>
-          </div>
-          <div className="roster-grid">
-            {opponents.map((item) => (
-              <button
-                className={`roster-card${opponent === item.name ? " active" : ""}`}
-                key={item.name}
-                type="button"
-                onClick={() => selectOpponent(item.name)}
-              >
-                <span className="roster-avatar">{item.name[0]}</span>
-                <span className="roster-name">{item.name}</span>
-                <span className="roster-tier">{rankNames[item.difficulty]}</span>
-              </button>
             ))}
           </div>
         </section>
