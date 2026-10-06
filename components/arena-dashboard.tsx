@@ -33,6 +33,11 @@ type MatchMode = {
   imageAlt: string;
 };
 
+type PendingBotMatch = {
+  label: string;
+  difficulty: string;
+};
+
 const opponents = [
   { name: "David", difficulty: "medium" },
   { name: "Alex", difficulty: "easy" },
@@ -104,6 +109,7 @@ const matchModes: MatchMode[] = [
 export function ArenaDashboard({ user }: { user: ArenaUser }) {
   const [difficulty, setDifficulty] = useState(user.selectedDifficulty);
   const [opponent, setOpponent] = useState(user.selectedOpponent);
+  const [pendingBotMatch, setPendingBotMatch] = useState<PendingBotMatch | null>(null);
   const [rooms, setRooms] = useState<RoomPlayer[]>([]);
   const [friends, setFriends] = useState<Friend[]>([]);
   const [query, setQuery] = useState("");
@@ -215,22 +221,44 @@ export function ArenaDashboard({ user }: { user: ArenaUser }) {
     void searchRooms();
   }
 
-  function startMatch(mode: "ai" | "offline", selectedDifficulty = difficulty) {
+  function startMatch(
+    mode: "ai" | "offline",
+    selectedDifficulty = difficulty,
+    selectedOpponent = opponent,
+  ) {
     if (mode === "ai") {
-      void updatePreference({ selectedDifficulty });
+      void updatePreference({ selectedDifficulty, selectedOpponent });
     }
 
     const search = new URLSearchParams({
       mode,
       difficulty: selectedDifficulty,
-      opponent,
+      opponent: selectedOpponent,
     });
     window.location.assign(`/match?${search.toString()}`);
   }
 
+  function chooseMatchMode(mode: MatchMode) {
+    if (mode.mode === "offline") {
+      startMatch(mode.mode, mode.difficulty);
+      return;
+    }
+
+    setPendingBotMatch({ label: mode.label, difficulty: mode.difficulty });
+    window.requestAnimationFrame(() => {
+      const roster = document.getElementById("opponentRoster");
+      roster?.scrollIntoView({ behavior: "smooth", block: "center" });
+      roster?.focus({ preventScroll: true });
+    });
+  }
+
   function selectOpponent(name: string) {
     setOpponent(name);
-    void updatePreference({ selectedOpponent: name });
+    if (pendingBotMatch) {
+      startMatch("ai", pendingBotMatch.difficulty, name);
+    } else {
+      void updatePreference({ selectedOpponent: name });
+    }
   }
 
   const rank = rankNames[difficulty] || rankNames.medium;
@@ -476,16 +504,23 @@ export function ArenaDashboard({ user }: { user: ArenaUser }) {
               <ModeCard
                 key={mode.label}
                 mode={mode}
-                onPlay={() => startMatch(mode.mode, mode.difficulty)}
+                onPlay={() => chooseMatchMode(mode)}
               />
             ))}
           </div>
         </section>
 
-        <section className="opponent-roster">
+        <section
+          className={`opponent-roster${pendingBotMatch ? " choosing-opponent" : ""}`}
+          id="opponentRoster"
+          tabIndex={-1}
+          aria-labelledby="opponentRosterTitle"
+        >
           <div className="section-heading">
-            <h2>Opponent roster</h2>
-            <span>Select a rival</span>
+            <h2 id="opponentRosterTitle">
+              {pendingBotMatch ? `Choose a bot for ${pendingBotMatch.label}` : "Opponent roster"}
+            </h2>
+            <span>{pendingBotMatch ? "Select a bot to start your match" : "Select a rival"}</span>
           </div>
           <div className="roster-grid">
             {opponents.map((item) => (
