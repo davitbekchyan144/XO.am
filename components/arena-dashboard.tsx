@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
+import { opponents, rankNames } from "@/lib/opponents";
 
 type ArenaUser = {
   id: string;
@@ -31,44 +32,6 @@ type MatchMode = {
   text: string;
   image: string;
   imageAlt: string;
-};
-
-type PendingBotMatch = {
-  label: string;
-  difficulty: string;
-};
-
-const opponents = [
-  { name: "David", difficulty: "medium" },
-  { name: "Alex", difficulty: "easy" },
-  { name: "Mason", difficulty: "medium" },
-  { name: "Ryan", difficulty: "hard" },
-  { name: "Ethan", difficulty: "easy" },
-  { name: "Noah", difficulty: "medium" },
-  { name: "Lucas", difficulty: "hard" },
-  { name: "Daniel", difficulty: "easy" },
-  { name: "James", difficulty: "medium" },
-  { name: "Leo", difficulty: "hard" },
-  { name: "Kai", difficulty: "easy" },
-  { name: "Victor", difficulty: "medium" },
-  { name: "Nolan", difficulty: "hard" },
-  { name: "Aiden", difficulty: "easy" },
-  { name: "Theo", difficulty: "hard" },
-  { name: "Ivy", difficulty: "easy" },
-  { name: "Orion", difficulty: "medium" },
-  { name: "Pixel", difficulty: "hard" },
-  { name: "Blaze", difficulty: "hard" },
-  { name: "Zara", difficulty: "medium" },
-  { name: "Atlas", difficulty: "hard" },
-  { name: "Echo", difficulty: "easy" },
-  { name: "Jett", difficulty: "medium" },
-  { name: "Skye", difficulty: "easy" },
-];
-
-const rankNames: Record<string, string> = {
-  easy: "Novice",
-  medium: "Legendary",
-  hard: "Master",
 };
 
 const matchModes: MatchMode[] = [
@@ -109,7 +72,6 @@ const matchModes: MatchMode[] = [
 export function ArenaDashboard({ user }: { user: ArenaUser }) {
   const [difficulty, setDifficulty] = useState(user.selectedDifficulty);
   const [opponent, setOpponent] = useState(user.selectedOpponent);
-  const [pendingBotMatch, setPendingBotMatch] = useState<PendingBotMatch | null>(null);
   const [rooms, setRooms] = useState<RoomPlayer[]>([]);
   const [friends, setFriends] = useState<Friend[]>([]);
   const [query, setQuery] = useState("");
@@ -243,22 +205,16 @@ export function ArenaDashboard({ user }: { user: ArenaUser }) {
       startMatch(mode.mode, mode.difficulty);
       return;
     }
-
-    setPendingBotMatch({ label: mode.label, difficulty: mode.difficulty });
-    window.requestAnimationFrame(() => {
-      const roster = document.getElementById("opponentRoster");
-      roster?.scrollIntoView({ behavior: "smooth", block: "center" });
-      roster?.focus({ preventScroll: true });
+    const search = new URLSearchParams({
+      difficulty: mode.difficulty,
+      mode: mode.label,
     });
+    window.location.assign(`/bots?${search.toString()}`);
   }
 
   function selectOpponent(name: string) {
     setOpponent(name);
-    if (pendingBotMatch) {
-      startMatch("ai", pendingBotMatch.difficulty, name);
-    } else {
-      void updatePreference({ selectedOpponent: name });
-    }
+    void updatePreference({ selectedOpponent: name });
   }
 
   const rank = rankNames[difficulty] || rankNames.medium;
@@ -276,7 +232,7 @@ export function ArenaDashboard({ user }: { user: ArenaUser }) {
               <button
                 className="btn-secondary"
                 type="button"
-                onClick={() => startMatch("ai")}
+                onClick={() => window.location.assign("/bots")}
               >
                 Quick AI match
               </button>
@@ -510,17 +466,10 @@ export function ArenaDashboard({ user }: { user: ArenaUser }) {
           </div>
         </section>
 
-        <section
-          className={`opponent-roster${pendingBotMatch ? " choosing-opponent" : ""}`}
-          id="opponentRoster"
-          tabIndex={-1}
-          aria-labelledby="opponentRosterTitle"
-        >
+        <section className="opponent-roster">
           <div className="section-heading">
-            <h2 id="opponentRosterTitle">
-              {pendingBotMatch ? `Choose a bot for ${pendingBotMatch.label}` : "Opponent roster"}
-            </h2>
-            <span>{pendingBotMatch ? "Select a bot to start your match" : "Select a rival"}</span>
+            <h2>Opponent roster</h2>
+            <span>Choose a rival for your next match</span>
           </div>
           <div className="roster-grid">
             {opponents.map((item) => (

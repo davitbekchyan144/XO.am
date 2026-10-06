@@ -1,0 +1,32 @@
+export const opponents = [
+  { name: "David", difficulty: "medium" },
+  { name: "Alex", difficulty: "easy" },
+  { name: "Mason", difficulty: "medium" },
+  { name: "Ryan", difficulty: "hard" },
+  { name: "Ethan", difficulty: "easy" },
+  { name: "Noah", difficulty: "medium" },
+  { name: "Lucas", difficulty: "hard" },
+  { name: "Daniel", difficulty: "easy" },
+  { name: "James", difficulty: "medium" },
+  { name: "Leo", difficulty: "hard" },
+  { name: "Kai", difficulty: "easy" },
+  { name: "Victor", difficulty: "medium" },
+  { name: "Nolan", difficulty: "hard" },
+  { name: "Aiden", difficulty: "easy" },
+  { name: "Theo", difficulty: "hard" },
+  { name: "Ivy", difficulty: "easy" },
+  { name: "Orion", difficulty: "medium" },
+  { name: "Pixel", difficulty: "hard" },
+  { name: "Blaze", difficulty: "hard" },
+  { name: "Zara", difficulty: "medium" },
+  { name: "Atlas", difficulty: "hard" },
+  { name: "Echo", difficulty: "easy" },
+  { name: "Jett", difficulty: "medium" },
+  { name: "Skye", difficulty: "easy" },
+] as const;
+
+export const rankNames: Record<string, string> = {
+  easy: "Novice",
+  medium: "Legendary",
+  hard: "Master",
+};

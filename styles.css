@@ -808,6 +808,20 @@ a:focus-visible {
   letter-spacing: 0.08em;
 }
 
+.bot-play-label {
+  margin-top: 4px;
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.roster-card:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
 .cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));

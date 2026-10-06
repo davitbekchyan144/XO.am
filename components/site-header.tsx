@@ -11,6 +11,7 @@ type SiteHeaderProps = {
 
 const links = [
   { href: "/", label: "Arena" },
+  { href: "/bots", label: "Bots" },
   { href: "/leaderboard", label: "Leaderboard" },
   { href: "/records", label: "Records" },
   { href: "/settings", label: "Settings" },
