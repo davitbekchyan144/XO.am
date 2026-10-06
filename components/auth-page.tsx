@@ -24,6 +24,7 @@ export function AuthPage({ mode, topLabel, title, description, boardMarks }: Aut
           />
         </Link>
         <div className="nav-links">
+          <Link className="nav-link" href="/leaderboard">Leaderboard</Link>
           <span className="nav-link">{topLabel}</span>
         </div>
       </nav>

@@ -1359,6 +1359,20 @@ a:focus-visible {
   color: var(--text-secondary);
 }
 
+.leaderboard-table {
+  overflow-x: auto;
+}
+
+.leaderboard-table .table-header,
+.leaderboard-table .table-row {
+  grid-template-columns: 0.6fr 2fr 1fr repeat(3, 0.8fr);
+  min-width: 650px;
+}
+
+.leaderboard-table [aria-colspan="6"] {
+  grid-column: 1 / -1;
+}
+
 .match-result-win {
   color: var(--accent) !important;
   font-weight: 800;
