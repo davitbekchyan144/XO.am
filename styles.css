@@ -31,7 +31,7 @@ html {
 
 body {
   position: relative;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background:
     radial-gradient(circle at 78% 8%, rgba(255, 209, 102, 0.13), transparent 13rem),
     radial-gradient(circle at top left, rgba(255, 122, 26, 0.16), transparent 28rem),
@@ -40,6 +40,8 @@ body {
   color: var(--text-primary);
   line-height: 1.6;
   font-size: 16px;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
 }
 
 body::before {
@@ -58,11 +60,11 @@ body::after {
   z-index: 0;
   top: 6%;
   right: 8%;
-  width: 110px;
+  width: 88px;
   aspect-ratio: 1;
   border-radius: 50%;
   pointer-events: none;
-  opacity: 0.16;
+  opacity: 0.12;
   background: var(--secondary-neon);
   box-shadow:
     0 0 44px rgba(255, 209, 102, 0.38),
@@ -72,7 +74,7 @@ body::after {
 .halloween-decor {
   position: fixed;
   inset: 0;
-  z-index: 20;
+  z-index: 0;
   pointer-events: none;
   overflow: hidden;
 }
@@ -81,7 +83,7 @@ body::after {
   position: absolute;
   width: 170px;
   height: 170px;
-  opacity: 0.18;
+  opacity: 0.09;
   background:
     repeating-radial-gradient(circle at 0 0, transparent 0 19px, rgba(222, 226, 214, 0.8) 20px 21px),
     repeating-conic-gradient(from 22.5deg at 0 0, rgba(222, 226, 214, 0.8) 0 1deg, transparent 1deg 22.5deg);
@@ -104,6 +106,7 @@ body::after {
   top: 0;
   width: 44px;
   height: 86px;
+  opacity: 0.72;
   padding-top: 72px;
   overflow: visible;
   color: transparent;
@@ -152,7 +155,9 @@ h3 {
 
 .nav-bar {
   border-color: rgba(255, 122, 26, 0.14);
-  box-shadow: 0 18px 40px rgba(3, 3, 12, 0.48);
+  background: rgba(12, 12, 25, 0.82);
+  border-color: rgba(255, 175, 91, 0.12);
+  box-shadow: 0 18px 50px rgba(3, 3, 12, 0.52), inset 0 1px rgba(255, 255, 255, 0.025);
 }
 
 .hero-panel,
@@ -169,7 +174,51 @@ h3 {
 }
 
 .btn-primary {
-  box-shadow: 0 10px 24px rgba(255, 122, 26, 0.18);
+  box-shadow: 0 10px 24px rgba(255, 122, 26, 0.16), inset 0 1px rgba(255, 255, 255, 0.16);
+  letter-spacing: 0.01em;
+}
+
+.nav-link {
+  transition: color 180ms ease, background 180ms ease, border-color 180ms ease;
+}
+
+.nav-link.active {
+  box-shadow: inset 0 -2px var(--primary);
+}
+
+.hero-panel {
+  background:
+    linear-gradient(120deg, rgba(255, 122, 26, 0.045), transparent 44%),
+    var(--card-bg);
+}
+
+.hero-panel h1 {
+  max-width: 680px;
+  letter-spacing: -0.045em;
+  line-height: 1.02;
+}
+
+.panel-header h2,
+.match-banner h2,
+.section-heading h2 {
+  letter-spacing: -0.025em;
+}
+
+.status-badge,
+.profile-pill,
+.roster-tier,
+.panel-kicker {
+  letter-spacing: 0.08em;
+}
+
+.game-card {
+  background:
+    radial-gradient(circle at center, rgba(255, 122, 26, 0.055), transparent 55%),
+    var(--card-bg);
+}
+
+.cell {
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.025), 0 12px 28px rgba(4, 5, 13, 0.24);
 }
 
 img, svg {
@@ -197,7 +246,7 @@ a:focus-visible {
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1120px;
   margin: 0 auto;
   padding: 28px 20px 60px;
   position: relative;
@@ -229,11 +278,11 @@ a:focus-visible {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 18px 24px;
+  padding: 12px 14px 12px 18px;
   margin-bottom: 32px;
   background: rgba(22, 33, 29, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 12px;
+  border-radius: 16px;
   box-shadow: 0 18px 30px rgba(0, 0, 0, 0.12);
   backdrop-filter: blur(18px);
   position: sticky;
@@ -256,7 +305,7 @@ a:focus-visible {
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 4px;
   flex-wrap: wrap;
 }
 
@@ -264,8 +313,8 @@ a:focus-visible {
   color: var(--text-secondary);
   text-decoration: none;
   transition: all 0.2s ease;
-  padding: 10px 14px;
-  border-radius: 10px;
+  padding: 9px 12px;
+  border-radius: 9px;
   font-weight: 600;
   font-size: 0.92rem;
 }
@@ -289,8 +338,8 @@ a:focus-visible {
   gap: 24px;
   background: linear-gradient(135deg, rgba(25, 37, 32, 0.92), rgba(25, 37, 32, 0.8));
   border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 32px;
+  border-radius: 18px;
+  padding: 36px;
   box-shadow: var(--shadow);
 }
 
@@ -354,7 +403,7 @@ a:focus-visible {
 .btn-primary {
   background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   color: #f8fbff;
-  box-shadow: 0 12px 24px rgba(255, 114, 94, 0.28);
+  box-shadow: 0 10px 22px rgba(255, 122, 26, 0.22);
 }
 
 .btn-primary:hover,
@@ -380,6 +429,42 @@ a:focus-visible {
   flex-direction: column;
   justify-content: center;
   gap: 18px;
+}
+
+.profile-panel,
+.challenge-panel,
+.mode-card,
+.score-box,
+.game-card,
+.auth-card,
+.profile-spotlight,
+.rank-section,
+.match-history,
+.settings-panel,
+.preview-card,
+.online-room-panel {
+  border-radius: 16px;
+}
+
+.mode-card {
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.mode-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 38px rgba(4, 4, 14, 0.32);
+}
+
+.score-box {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.018), transparent), var(--card-bg);
+}
+
+.game-card {
+  border-radius: 20px;
+}
+
+.cell {
+  border-radius: 14px;
 }
 
 .status-badge {
@@ -477,7 +562,7 @@ a:focus-visible {
   padding: 18px 16px;
   background: rgba(27, 39, 33, 0.7);
   border: 1px solid var(--border-color);
-  border-radius: 10px;
+  border-radius: 12px;
 }
 
 .metric-box span {
@@ -1851,6 +1936,17 @@ a:focus-visible {
 }
 
 @media (max-width: 620px) {
+  .hanging-spider-right,
+  .spider-web-right {
+    display: none;
+  }
+
+  .spider-web {
+    width: 120px;
+    height: 120px;
+    opacity: 0.075;
+  }
+
   .nav-bar {
     padding: 14px 16px;
     gap: 12px;
