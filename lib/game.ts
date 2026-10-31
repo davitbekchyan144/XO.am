@@ -12,6 +12,15 @@ export function boardWinner(board: string[]) {
   return null;
 }
 
+export function winningCells(board: string[]) {
+  for (const line of winningLines) {
+    const [first, second, third] = line;
+    const mark = board[first];
+    if (mark && mark === board[second] && mark === board[third]) return line;
+  }
+  return [];
+}
+
 export function matchPointChange(
   result: "win" | "loss" | "draw",
   mode: "ai" | "offline" | "online",

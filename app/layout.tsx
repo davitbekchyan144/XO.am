@@ -4,8 +4,8 @@ import { getCurrentUser } from "@/lib/auth";
 import "../styles.css";
 
 export const metadata: Metadata = {
-  title: "XO.am | Arena",
-  description: "Play tic-tac-toe against the AI, locally, or live with friends.",
+  title: "XO.am | Halloween Arena",
+  description: "Enter the Halloween XO arena and play against the AI, locally, or live with friends.",
   verification: {
     google: "OvUGB_oxdhqnx05mt0eG9Lc8k27_AdW7s2-AFrRYs2U",
   },

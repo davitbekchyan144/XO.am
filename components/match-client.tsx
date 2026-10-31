@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { boardWinner } from "@/lib/game";
+import { boardWinner, winningCells } from "@/lib/game";
 
 type MatchMode = "ai" | "offline" | "online";
 type MatchResult = "win" | "loss" | "draw";
@@ -89,6 +89,8 @@ export function MatchClient({
   const [roomWins, setRoomWins] = useState(0);
   const [roomLosses, setRoomLosses] = useState(0);
   const [copied, setCopied] = useState(false);
+  const [winStreak, setWinStreak] = useState(0);
+  const [bestStreak, setBestStreak] = useState(0);
   const lastRevision = useRef(-1);
   const savedLocalRound = useRef(false);
   const lastOnlineRound = useRef(0);
@@ -152,6 +154,7 @@ export function MatchClient({
           } else if (state.status === "closed") {
             setGameStatus("finished");
             setResult("loss");
+            setWinStreak(0);
             setMessage("The other player left the match.");
           } else if (state.status === "finished") {
             setGameStatus("finished");
@@ -159,6 +162,12 @@ export function MatchClient({
             setResult(matchResult);
             if (matchResult === "win") setRoomWins((value) => value + 1);
             if (matchResult === "loss") setRoomLosses((value) => value + 1);
+            setWinStreak((current) => {
+              if (matchResult !== "win") return 0;
+              const next = current + 1;
+              setBestStreak((best) => Math.max(best, next));
+              return next;
+            });
             setMessage(getResultMessage(matchResult, state.opponentName));
           } else {
             setGameStatus("playing");
@@ -185,7 +194,16 @@ export function MatchClient({
   useEffect(() => {
     if (!result || mode === "online" || savedLocalRound.current) return;
     savedLocalRound.current = true;
-    if (result === "win") setWins((value) => value + 1);
+    if (result === "win") {
+      setWins((value) => value + 1);
+      setWinStreak((current) => {
+        const next = current + 1;
+        setBestStreak((best) => Math.max(best, next));
+        return next;
+      });
+    } else {
+      setWinStreak(0);
+    }
     if (result === "loss") {
       setLosses((value) => value + 1);
       if (mode === "offline") setOfflineOpponentWins((value) => value + 1);
@@ -202,6 +220,8 @@ export function MatchClient({
       body: JSON.stringify(match),
     });
   }, [difficulty, mode, opponent, result]);
+
+  const completedLine = gameStatus === "finished" ? winningCells(board) : [];
 
   function play(index: number) {
     if (gameStatus !== "playing" || board[index]) return;
@@ -329,7 +349,12 @@ export function MatchClient({
           </div>
         )}
 
-        <div className="score-section">
+        <div className="match-streak-row" aria-label="Current and best win streak">
+          <span><strong>{winStreak}</strong> round streak</span>
+          <span className="match-streak-divider" />
+          <span>Best <strong>{bestStreak}</strong></span>
+        </div>
+        <div className={`score-section${result === "win" ? " score-section-win" : ""}`}>
           <div className="score-box">
             <div className="score-label">
               You{mode === "online" && onlineMark ? ` (${onlineMark})` : ""}
@@ -347,7 +372,7 @@ export function MatchClient({
           <div className="board" role="group" aria-label="Tic-tac-toe board">
             {board.map((cell, index) => (
               <button
-                className={`cell${cell === "O" ? " cell-o" : ""}`}
+                className={`cell${cell === "O" ? " cell-o" : ""}${completedLine.includes(index) ? " cell-win" : ""}`}
                 key={index}
                 type="button"
                 aria-label={`Square ${index + 1}${cell ? `, ${cell}` : ", empty"}`}
@@ -365,7 +390,7 @@ export function MatchClient({
           </div>
         </div>
 
-        <div className="game-status" aria-live="polite">
+        <div className={`game-status game-status-${result ?? "active"}`} aria-live="polite">
           {statusTitle && <div className="winner-banner">{statusTitle}</div>}
           <div id="gameStatus">{message}</div>
         </div>
