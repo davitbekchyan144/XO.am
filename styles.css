@@ -69,6 +69,81 @@ body::after {
     inset -22px -4px rgba(8, 9, 20, 0.82);
 }
 
+.halloween-decor {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.spider-web {
+  position: absolute;
+  width: 170px;
+  height: 170px;
+  opacity: 0.18;
+  background:
+    repeating-radial-gradient(circle at 0 0, transparent 0 19px, rgba(222, 226, 214, 0.8) 20px 21px),
+    repeating-conic-gradient(from 22.5deg at 0 0, rgba(222, 226, 214, 0.8) 0 1deg, transparent 1deg 22.5deg);
+  mask-image: linear-gradient(135deg, #000, transparent 78%);
+}
+
+.spider-web-left {
+  top: 0;
+  left: 0;
+}
+
+.spider-web-right {
+  right: 0;
+  top: 0;
+  transform: scaleX(-1);
+}
+
+.hanging-spider {
+  position: absolute;
+  top: 0;
+  width: 44px;
+  height: 86px;
+  padding-top: 72px;
+  overflow: visible;
+  color: transparent;
+  user-select: none;
+}
+
+.hanging-spider::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 1px;
+  height: 68px;
+  background: rgba(225, 225, 215, 0.28);
+}
+
+.hanging-spider::after {
+  content: "\1F577";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  color: #101018;
+  font-size: 28px;
+  filter: drop-shadow(0 0 7px rgba(255, 122, 26, 0.28));
+  transform: translateX(-50%);
+}
+
+.hanging-spider-left {
+  left: 13%;
+}
+
+.hanging-spider-right {
+  right: 15%;
+  height: 112px;
+}
+
+.hanging-spider-right::before {
+  height: 94px;
+}
+
 h1,
 h2,
 h3 {
@@ -316,6 +391,30 @@ a:focus-visible {
   color: var(--accent);
   font-size: 0.78rem;
   font-weight: 700;
+}
+
+.status-badge {
+  border-radius: 999px;
+  border-color: rgba(155, 220, 86, 0.38);
+  background: rgba(155, 220, 86, 0.09);
+  box-shadow: 0 0 18px rgba(155, 220, 86, 0.08);
+}
+
+.status-badge::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+  vertical-align: 1px;
+  animation: connected-pulse 2s ease-in-out infinite;
+}
+
+@keyframes connected-pulse {
+  50% { opacity: 0.45; transform: scale(0.78); }
 }
 
 .preview-panel {

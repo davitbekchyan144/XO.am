@@ -17,6 +17,12 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   return (
     <html lang="en" data-theme={user?.darkMode === false ? "light" : "dark"}>
       <body>
+        <div className="halloween-decor" aria-hidden="true">
+          <span className="spider-web spider-web-left" />
+          <span className="spider-web spider-web-right" />
+          <span className="hanging-spider hanging-spider-left">8 legs</span>
+          <span className="hanging-spider hanging-spider-right">8 legs</span>
+        </div>
         {children}
         <Analytics />
       </body>
