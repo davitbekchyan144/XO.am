@@ -92,6 +92,8 @@ export function MatchClient({
   const [winStreak, setWinStreak] = useState(0);
   const [bestStreak, setBestStreak] = useState(0);
   const lastRevision = useRef(-1);
+  const countedOnlineRound = useRef("");
+  const finishedOnlineRound = useRef(0);
   const savedLocalRound = useRef(false);
   const lastOnlineRound = useRef(0);
 
@@ -147,6 +149,7 @@ export function MatchClient({
           if (state.round !== lastOnlineRound.current) {
             lastOnlineRound.current = state.round;
             setResult(null);
+            countedOnlineRound.current = "";
           }
           if (state.status === "waiting") {
             setGameStatus("waiting");
@@ -155,19 +158,29 @@ export function MatchClient({
             setGameStatus("finished");
             setResult("loss");
             setWinStreak(0);
+            setRoomLosses((value) => value + 1);
             setMessage("The other player left the match.");
           } else if (state.status === "finished") {
             setGameStatus("finished");
             const matchResult = getMatchResult(state.winner, state.yourMark);
             setResult(matchResult);
-            if (matchResult === "win") setRoomWins((value) => value + 1);
-            if (matchResult === "loss") setRoomLosses((value) => value + 1);
-            setWinStreak((current) => {
-              if (matchResult !== "win") return 0;
-              const next = current + 1;
-              setBestStreak((best) => Math.max(best, next));
-              return next;
-            });
+            const roundKey = `${state.round}:${matchResult}`;
+            if (
+              countedOnlineRound.current !== roundKey &&
+              finishedOnlineRound.current !== state.round
+            ) {
+              countedOnlineRound.current = roundKey;
+              finishedOnlineRound.current = state.round;
+              if (matchResult === "win") setRoomWins((value) => value + 1);
+              if (matchResult === "loss") setRoomLosses((value) => value + 1);
+              setWinStreak((current) => {
+                if (matchResult !== "win") return 0;
+                const next = current + 1;
+                setBestStreak((best) => Math.max(best, next));
+                return next;
+              });
+              if (matchResult === "draw") setWinStreak(0);
+            }
             setMessage(getResultMessage(matchResult, state.opponentName));
           } else {
             setGameStatus("playing");
@@ -359,20 +372,20 @@ export function MatchClient({
             <div className="score-label">
               You{mode === "online" && onlineMark ? ` (${onlineMark})` : ""}
             </div>
-            <div className="score-value">{playerScore}</div>
+            <div className="score-value score-value-pop" key={`player-${playerScore}`}>{playerScore}</div>
           </div>
           <div className="versus">vs</div>
           <div className="score-box">
             <div className="score-label">{rival}</div>
-            <div className="score-value">{localOpponentScore}</div>
+            <div className="score-value score-value-pop" key={`opponent-${localOpponentScore}`}>{localOpponentScore}</div>
           </div>
         </div>
 
         <div className="game-card">
-          <div className="board" role="group" aria-label="Tic-tac-toe board">
+          <div className="board board-enter" key={round} role="group" aria-label="Tic-tac-toe board">
             {board.map((cell, index) => (
               <button
-                className={`cell${cell === "O" ? " cell-o" : ""}${completedLine.includes(index) ? " cell-win" : ""}`}
+                className={`cell${cell ? " cell-filled" : ""}${cell === "O" ? " cell-o" : ""}${completedLine.includes(index) ? " cell-win" : ""}`}
                 key={index}
                 type="button"
                 aria-label={`Square ${index + 1}${cell ? `, ${cell}` : ", empty"}`}
