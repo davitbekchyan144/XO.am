@@ -35,7 +35,7 @@ body {
   background:
     radial-gradient(circle at 78% 8%, rgba(255, 209, 102, 0.13), transparent 13rem),
     radial-gradient(circle at top left, rgba(255, 122, 26, 0.16), transparent 28rem),
-    radial-gradient(circle at 15% 75%, rgba(123, 72, 184, 0.12), transparent 26rem),
+    radial-gradient(circle at 15% 75%, rgba(95, 63, 135, 0.12), transparent 26rem),
     linear-gradient(180deg, #080914 0%, #11101f 48%, #090b16 100%);
   color: var(--text-primary);
   line-height: 1.6;
@@ -1515,6 +1515,13 @@ a:focus-visible {
 
 .password-input-wrap input {
   padding-right: 72px;
+}
+
+.auth-field-hint {
+  margin: 8px 0 0;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  line-height: 1.45;
 }
 
 .password-toggle {

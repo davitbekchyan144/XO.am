@@ -11,9 +11,24 @@ const signupSchema = z.object({
 });
 
 export async function POST(request: Request) {
-  const parsed = signupSchema.safeParse(await request.json().catch(() => null));
+  const payload = await request.json().catch(() => null);
+  const parsed = signupSchema.safeParse(payload);
   if (!parsed.success) {
-    return NextResponse.json({ error: "Check your name, email, and password requirements." }, { status: 400 });
+    const displayName = typeof payload?.displayName === "string" ? payload.displayName.trim() : "";
+    const email = typeof payload?.email === "string" ? payload.email.trim() : "";
+    const password = typeof payload?.password === "string" ? payload.password : "";
+
+    if (displayName.length < 2 || displayName.length > 24 || !/^[a-zA-Z0-9 _-]+$/.test(displayName)) {
+      return NextResponse.json({ error: "Use a display name of 2-24 letters, numbers, spaces, hyphens, or underscores." }, { status: 400 });
+    }
+    if (!email || email.length > 254 || !z.string().email().safeParse(email).success) {
+      return NextResponse.json({ error: "Enter a valid email address." }, { status: 400 });
+    }
+    if (password.length < 8 || password.length > 72 || !/[A-Za-z]/.test(password) || !/\d/.test(password)) {
+      return NextResponse.json({ error: "Password must be 8-72 characters and include a letter and a number." }, { status: 400 });
+    }
+
+    return NextResponse.json({ error: "Check your account details and try again." }, { status: 400 });
   }
 
   const displayName = parsed.data.displayName;

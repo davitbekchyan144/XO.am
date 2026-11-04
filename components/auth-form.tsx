@@ -27,6 +27,21 @@ export function AuthForm({ mode }: AuthFormProps) {
           password: formData.get("password"),
         };
 
+    if (isSignup) {
+        const displayName = String(payload.displayName ?? "").trim();
+        const password = String(payload.password ?? "");
+        if (!/^[a-zA-Z0-9 _-]+$/.test(displayName)) {
+          setMessage("Display name can only use letters, numbers, spaces, hyphens, and underscores.");
+          setPending(false);
+          return;
+        }
+        if (password.length < 8 || password.length > 72 || !/[A-Za-z]/.test(password) || !/\d/.test(password)) {
+          setMessage("Password must be 8-72 characters and include a letter and a number.");
+          setPending(false);
+          return;
+        }
+    }
+
     if (isSignup && formData.get("password") !== formData.get("confirmPassword")) {
       setMessage("Passwords do not match.");
       setPending(false);
@@ -80,6 +95,8 @@ export function AuthForm({ mode }: AuthFormProps) {
                 id="displayName"
                 name="displayName"
                 autoComplete="nickname"
+                autoCapitalize="none"
+                spellCheck={false}
                 minLength={2}
                 maxLength={24}
                 required
@@ -112,6 +129,7 @@ export function AuthForm({ mode }: AuthFormProps) {
               type={visiblePasswords ? "text" : "password"}
               autoComplete={isSignup ? "new-password" : "current-password"}
               minLength={isSignup ? 8 : undefined}
+              maxLength={isSignup ? 72 : undefined}
               required
             />
             <button
@@ -122,6 +140,9 @@ export function AuthForm({ mode }: AuthFormProps) {
               {visiblePasswords ? "Hide" : "Show"}
             </button>
           </div>
+          {isSignup && (
+            <p className="auth-field-hint">Use 8-72 characters with at least one letter and one number.</p>
+          )}
         </div>
         {isSignup && (
           <div className="form-group">
